@@ -43,11 +43,9 @@ public class CalendarProgram{
         private JButton btnAdd, btnDelete;
         private JCheckBox chkHoliday;
         public int curRow = -1, curCol = -1;
-        private JLabel lblRemovePlan;
-        private JButton btnToDo_1;
-        private JButton btnEvent_1;
-        private JLabel lblToDo;
-        private JLabel lblEventList;
+        private JPanel panel;
+        private JLabel lblAgenda;
+        private JLabel lblTodoList;
         
         public void refreshCalendar(int month, int year) {
             int nod, som, i, j;
@@ -122,22 +120,23 @@ public class CalendarProgram{
             
                 
             frmMain = new JFrame ("Calendar Application");
+            frmMain.setBackground(Color.WHITE);
             // frmMain.setSize(660, 750);
-            frmMain.setSize(1000, 850);
+            frmMain.setSize(910, 838);
             pane = frmMain.getContentPane();
             pane.setLayout(null);
             frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 
             monthLabel = new JLabel ("January");
-            monthLabel.setBounds(92, 22, 110, 50);
+            monthLabel.setBounds(91, 7, 110, 50);
             yearLabel = new JLabel ("Change year:");
             yearLabel.setBounds(20, 610, 160, 40);
             cmbYear = new JComboBox();
             cmbYear.setBounds(460, 610, 160, 40);
             btnPrev = new JButton ("<<");
-            btnPrev.setBounds(20, 34, 48, 29);
+            btnPrev.setBounds(20, 19, 48, 29);
             btnNext = new JButton (">>");
-            btnNext.setBounds(171, 35, 48, 27);
+            btnNext.setBounds(171, 20, 48, 27);
             modelCalendarTable = new DefaultTableModel() {
                 public boolean isCellEditable(int rowIndex, int mColIndex) {
                     return false;
@@ -153,7 +152,7 @@ public class CalendarProgram{
             calendarTable.addMouseListener(new calListener());  
                 
             scrollCalendarTable = new JScrollPane(calendarTable);
-            scrollCalendarTable.setBounds(19, 71, 200, 200);
+            scrollCalendarTable.setBounds(19, 47, 200, 200);
             calendarPanel = new JPanel(null);
             calendarPanel.setBorder(BorderFactory.createTitledBorder("Calendar"));
                 
@@ -230,8 +229,8 @@ public class CalendarProgram{
             frmMain.setVisible(true);
             
             pane.setBackground(new Color(220,220,220));
-            eventPanel.setBackground(new Color(220,220,220));
-            calendarPanel.setBackground(new Color(220,220,220));
+            eventPanel.setBackground(Color.LIGHT_GRAY);
+            calendarPanel.setBackground(Color.LIGHT_GRAY);
 		
             // SETS CURRENT DATE
             GregorianCalendar cal = new GregorianCalendar();
@@ -258,57 +257,53 @@ public class CalendarProgram{
             //calendarTable.setRowHeight(76);
             calendarTable.setRowHeight(20);
             
-            JLabel lblCreatePlans = new JLabel("Create Plan");
-            lblCreatePlans.setBounds(379, 26, 100, 16);
-            calendarPanel.add(lblCreatePlans);
-            
-            JButton btnToDo = new JButton("To - do Task");
-            btnToDo.setBounds(260, 54, 117, 29);
-            calendarPanel.add(btnToDo);
-            
-            JButton btnEvent = new JButton("Event");
-            btnEvent.setBounds(458, 54, 117, 29);
-            calendarPanel.add(btnEvent);
-            
-            lblRemovePlan = new JLabel("Remove Plan");
-            lblRemovePlan.setBounds(379, 121, 90, 16);
-            calendarPanel.add(lblRemovePlan);
-            
-            btnToDo_1 = new JButton("To - do Task");
-            btnToDo_1.setBounds(260, 168, 117, 29);
-            calendarPanel.add(btnToDo_1);
-            
-            btnEvent_1 = new JButton("Event");
-            btnEvent_1.setBounds(460, 168, 117, 29);
-            calendarPanel.add(btnEvent_1);
-            
             JPanel panel_2 = new JPanel();
             panel_2.setBackground(Color.WHITE);
-            panel_2.setBounds(20, 283, 599, 318);
+            panel_2.setBounds(230, 43, 390, 568);
             calendarPanel.add(panel_2);
             
-            JLabel lblAgenda = new JLabel("Agenda");
-            panel_2.add(lblAgenda);
+            lblAgenda = new JLabel("Agenda");
+            lblAgenda.setBounds(396, 24, 61, 16);
+            calendarPanel.add(lblAgenda);
             
-            JPanel panel = new JPanel();
-            panel.setBackground(Color.WHITE);
-            panel.setBounds(644, 6, 350, 397);
-            frmMain.getContentPane().add(panel);
-            panel.setLayout(null);
+            lblTodoList = new JLabel("To-do List");
+            lblTodoList.setBounds(86, 259, 94, 16);
+            calendarPanel.add(lblTodoList);
             
-            lblToDo = new JLabel("To - do List");
-            lblToDo.setBounds(149, 6, 75, 16);
-            panel.add(lblToDo);
+            JButton btnCreate = new JButton("Create");
+            btnCreate.setBounds(63, 284, 117, 29);
+            calendarPanel.add(btnCreate);
             
-            JPanel panel_1 = new JPanel();
-            panel_1.setBackground(Color.WHITE);
-            panel_1.setBounds(644, 413, 350, 397);
-            frmMain.getContentPane().add(panel_1);
-            panel_1.setLayout(null);
+            JButton btnRemove = new JButton("Remove");
+            btnRemove.setBounds(63, 325, 117, 29);
+            calendarPanel.add(btnRemove);
             
-            lblEventList = new JLabel("Event List");
-            lblEventList.setBounds(152, 6, 61, 16);
-            panel_1.add(lblEventList);
+            JLabel lblEventsList = new JLabel("Event/s List");
+            lblEventsList.setBounds(75, 391, 94, 16);
+            calendarPanel.add(lblEventsList);
+            
+            JButton btnCreate_1 = new JButton("Create");
+            btnCreate_1.setBounds(63, 419, 117, 29);
+            calendarPanel.add(btnCreate_1);
+            
+            JButton btnRemove_1 = new JButton("Remove");
+            btnRemove_1.setBounds(63, 460, 117, 29);
+            calendarPanel.add(btnRemove_1);
+            
+            JPanel todoPanel = new JPanel();
+            todoPanel.setBackground(Color.LIGHT_GRAY);
+            todoPanel.setForeground(Color.GRAY);
+            todoPanel.setBounds(644, 6, 260, 798);
+            frmMain.getContentPane().add(todoPanel);
+            todoPanel.setLayout(null);
+            
+            JLabel eventsLabel = new JLabel("Event/s");
+            eventsLabel.setBounds(106, 5, 48, 16);
+            todoPanel.add(eventsLabel);
+            
+            panel = new JPanel();
+            panel.setBounds(6, 23, 248, 769);
+            todoPanel.add(panel);
             modelCalendarTable.setColumnCount(7);
             modelCalendarTable.setRowCount(6);
 		
