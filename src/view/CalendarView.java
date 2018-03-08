@@ -149,7 +149,7 @@ public class CalendarView{
             frmMain = new JFrame ("Productivity Application");
             frmMain.setBackground(Color.WHITE);
             // frmMain.setSize(660, 750);
-            frmMain.setSize(910, 626);
+            frmMain.setSize(910, 546);
             pane = frmMain.getContentPane();
             pane.setLayout(null);
             frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -157,9 +157,9 @@ public class CalendarView{
             monthLabel = new JLabel ("January");
             monthLabel.setBounds(91, 7, 110, 50);
             yearLabel = new JLabel ("Change year:");
-            yearLabel.setBounds(17, 400, 160, 40);
+            yearLabel.setBounds(14, 257, 94, 27);
             cmbYear = new JComboBox();
-            cmbYear.setBounds(460, 401, 160, 40);
+            cmbYear.setBounds(117, 250, 107, 40);
             btnPrev = new JButton ("<<");
             btnPrev.setBounds(20, 19, 48, 29);
             btnNext = new JButton (">>");
@@ -228,7 +228,7 @@ public class CalendarView{
             calendarPanel.add(btnNext);
             calendarPanel.add(scrollCalendarTable);
                
-            calendarPanel.setBounds(0, 0, 640, 444);
+            calendarPanel.setBounds(0, 0, 640, 370);
                 
             pane.add(eventPanel);
             eventPanel.add(eNameLabel);
@@ -246,7 +246,7 @@ public class CalendarView{
             eventPanel.add(cmbEnd);
             eventPanel.add(errorLbl);
                 
-            eventPanel.setBounds(0, 456, 640, 140);
+            eventPanel.setBounds(0, 375, 640, 140);
             eNameLabel.setBounds(20,20, 160, 30);
             eStart.setBounds(20, 50, 160, 30);
             eEnd.setBounds(20, 80, 160, 30);
@@ -296,31 +296,31 @@ public class CalendarView{
             calendarTable.setRowHeight(30);
             
             agendaPanel = new JPanel();
-            agendaPanel.setBounds(230, 35, 390, 346);
+            agendaPanel.setBounds(230, 35, 390, 317);
             agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda for Today"));
             calendarPanel.add(agendaPanel);
             
             lblTodoList = new JLabel("To-do List");
-            lblTodoList.setBounds(86, 259, 94, 16);
+            lblTodoList.setBounds(25, 304, 94, 16);
             calendarPanel.add(lblTodoList);
             
             btnCreateTodo = new JButton("Create To-do");
-            btnCreateTodo.setBounds(63, 284, 117, 29);
+            btnCreateTodo.setBounds(6, 321, 113, 29);
             btnCreateTodo.addActionListener(new btnCreateTodo_Action());
             calendarPanel.add(btnCreateTodo);
             
             lblEventsList = new JLabel("Event/s List");
-            lblEventsList.setBounds(78, 324, 94, 16);
+            lblEventsList.setBounds(128, 303, 94, 16);
             calendarPanel.add(lblEventsList);
             
             btnCreateEvent = new JButton("Create Event");
-            btnCreateEvent.setBounds(62, 354, 117, 29);
+            btnCreateEvent.setBounds(116, 320, 110, 29);
             btnCreateEvent.addActionListener(new btnCreateEvent_Action());
             calendarPanel.add(btnCreateEvent);
             
             schedPanel = new JPanel();
             schedPanel.setBackground(Color.LIGHT_GRAY);
-            schedPanel.setBounds(645, 0, 260, 593);
+            schedPanel.setBounds(645, 0, 260, 515);
             pane.add(schedPanel);
             
             schedPanel.setBorder(BorderFactory.createTitledBorder("Schedule Today"));
