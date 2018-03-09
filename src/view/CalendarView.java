@@ -163,7 +163,7 @@ public class CalendarView{
             frmMain = new JFrame ("Productivity Application");
             frmMain.setBackground(Color.WHITE);
             // frmMain.setSize(660, 750);
-            frmMain.setSize(910, 840);
+            frmMain.setSize(910, 681);
             pane = frmMain.getContentPane();
             pane.setLayout(null);
             frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -242,7 +242,7 @@ public class CalendarView{
             calendarPanel.add(btnNext);
             calendarPanel.add(scrollCalendarTable);
                
-            calendarPanel.setBounds(0, 0, 640, 670);
+            calendarPanel.setBounds(0, 0, 640, 508);
                 
             pane.add(eventPanel);
             eventPanel.add(eNameLabel);
@@ -260,7 +260,7 @@ public class CalendarView{
             eventPanel.add(cmbEnd);
             eventPanel.add(errorLbl);
                 
-            eventPanel.setBounds(0, 670, 640, 140);
+            eventPanel.setBounds(0, 509, 640, 140);
             eNameLabel.setBounds(20,20, 160, 30);
             eStart.setBounds(20, 50, 160, 30);
             eEnd.setBounds(20, 80, 160, 30);
@@ -310,7 +310,7 @@ public class CalendarView{
             calendarTable.setRowHeight(30);
             
             agendaPanel = new JPanel();
-            agendaPanel.setBounds(230, 35, 390, 575);
+            agendaPanel.setBounds(230, 35, 390, 463);
             agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda for Today"));
             agendaPanel.setBackground(Color.white);
             calendarPanel.add(agendaPanel);
@@ -377,7 +377,7 @@ public class CalendarView{
             
             schedPanel = new JPanel();
             schedPanel.setBackground(Color.white);
-            schedPanel.setBounds(645, 0, 260, 810);
+            schedPanel.setBounds(645, 0, 260, 653);
             pane.add(schedPanel);
             
             schedPanel.setBorder(BorderFactory.createTitledBorder("Schedule Today"));
