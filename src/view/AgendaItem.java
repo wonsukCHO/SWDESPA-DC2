@@ -9,10 +9,12 @@ import controller.CalendarController;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
+import java.awt.Font;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
@@ -38,21 +40,32 @@ public class AgendaItem extends JPanel {
     private JCheckBox chkDone;
     private JLabel eTime;
     
+    private Font dom;
+    
     
     public AgendaItem() {
+        // add font from file
+        try {
+            dom = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("arial.ttf"))).deriveFont(Font.PLAIN, 15);
+            
+        }
+        catch (Exception ex) {
+            System.out.println("FONT NOT FOUND");
+        }
+            
         eName = new JLabel();
         eTime = new JLabel();
         chkDone = new JCheckBox();
-        deleteBtn = new JButton("D");
+        deleteBtn = new JButton();
         
-        /**
+       
         try {
             ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/trash.png")));
-            deleteBtn.setIcon(new ImageIcon(icon.getImage().getScaledInstance(30,30, Image.SCALE_DEFAULT)));
+            deleteBtn.setIcon(new ImageIcon(icon.getImage().getScaledInstance(25,25, Image.SCALE_DEFAULT)));
         } catch(IOException e) {
             System.out.println("FILE NOT FOUND");
         }
-        **/
+       
         
         
         eName.setPreferredSize(new Dimension(200,40));
@@ -67,6 +80,10 @@ public class AgendaItem extends JPanel {
         add(deleteBtn);
         add(eTime);
         
+        eTime.setFont(dom);
+        eName.setFont(dom);
+        
+        setBorder(BorderFactory.createLineBorder(Color.white, 1)); 
         setPreferredSize(new Dimension(390,40));
         setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
     }
@@ -76,11 +93,11 @@ public class AgendaItem extends JPanel {
         this.event = e;
         
         if (e.getType().equalsIgnoreCase("event")) {
-            setBackground(new Color(177,193,249)); 
-            chkDone.setVisible(false);
+            setBackground(new Color(102,143,255)); 
+            chkDone.setEnabled(false);
         }
         else
-            setBackground(new Color(252,249,151));
+            setBackground(new Color(255,200,80));
         
         String startTime = String.valueOf(e.getStartTime());
         String endTime = String.valueOf(e.getEndTime());
@@ -100,7 +117,7 @@ public class AgendaItem extends JPanel {
     public static final AgendaItem createEmpty() {
 	AgendaItem item = new AgendaItem();
 			
-	item.eName.setText("NO EVENTS FOR TODAY");
+	item.eName.setText("NO ACTIVITIES FOR TODAY");
         item.deleteBtn.setVisible(false);
         item.chkDone.setVisible(false);
 

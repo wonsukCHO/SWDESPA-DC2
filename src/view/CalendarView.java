@@ -13,13 +13,20 @@ import controller.CalendarController;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import model.Event;
 import javax.swing.*;
 import javax.swing.table.*;
 import java.util.List;
 import java.awt.event.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.Arrays;
 import java.util.GregorianCalendar;
+import javax.imageio.ImageIO;
 
 public class CalendarView{
         /**** Day Components ****/
@@ -50,10 +57,7 @@ public class CalendarView{
         /***DC2 COMPONENTS***/
         private JPanel agendaPanel;
         private JPanel schedPanel;
-        private JLabel lblEventsList;
-        private JLabel lblTodoList;
-        private JButton btnCreateEvent;
-        private JButton btnCreateTodo;
+        private JButton btnCreateEvent, btnCreateTodo, btnViewEvent, btnViewTodo, btnViewAgenda;
         private JLabel eStart, eEnd;
         private JComboBox cmbStart, cmbEnd;
         private String addMode;
@@ -66,6 +70,8 @@ public class CalendarView{
         private JScrollPane agendaScroll;
         private JScrollPane scheduleScroll;
         private JLabel errorLbl;
+        private Font dom;
+        private String viewMode;
         
         public void attach (CalendarController c) {
             this.controller = c;
@@ -145,11 +151,19 @@ public class CalendarView{
                 UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
             }
             catch (Exception e) {}
+            
+            // add font from file
+            try {
+                dom = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream(new File("arial.ttf"))).deriveFont(Font.PLAIN, 15);
+            }
+            catch (Exception ex) {
+		System.out.println("FONT NOT FOUND");
+            }
                 
             frmMain = new JFrame ("Productivity Application");
             frmMain.setBackground(Color.WHITE);
             // frmMain.setSize(660, 750);
-            frmMain.setSize(910, 546);
+            frmMain.setSize(910, 840);
             pane = frmMain.getContentPane();
             pane.setLayout(null);
             frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -157,13 +171,14 @@ public class CalendarView{
             monthLabel = new JLabel ("January");
             monthLabel.setBounds(91, 7, 110, 50);
             yearLabel = new JLabel ("Change year:");
-            yearLabel.setBounds(14, 257, 94, 27);
+            yearLabel.setBounds(20, 250, 160, 40);
             cmbYear = new JComboBox();
-            cmbYear.setBounds(117, 250, 107, 40);
+            cmbYear.setBounds(130, 250, 90, 40);
             btnPrev = new JButton ("<<");
             btnPrev.setBounds(20, 19, 48, 29);
             btnNext = new JButton (">>");
             btnNext.setBounds(171, 20, 48, 27);
+            
             modelCalendarTable = new DefaultTableModel() {
                 public boolean isCellEditable(int rowIndex, int mColIndex) {
                     return false;
@@ -172,7 +187,7 @@ public class CalendarView{
                 
             calendarTable = new JTable(modelCalendarTable);
                 
-            btnAdd = new JButton("Add");
+            btnAdd = new JButton("ADD");
             calendarTable.addMouseListener(new calListener());  
                 
             scrollCalendarTable = new JScrollPane(calendarTable);
@@ -195,7 +210,7 @@ public class CalendarView{
             errorLbl = new JLabel();
             
             for (int hour = 0; hour < 24; hour++) {
-                for (int min = 0; min < 60; min += 15) {
+                for (int min = 0; min < 60; min += 30) {
                     String hourString = String.valueOf(hour);
                     if (hourString.length() == 1)
                         hourString = "0"+hourString;
@@ -205,7 +220,6 @@ public class CalendarView{
                     String time = hourString + ":" + minString;
                     cmbStart.addItem(time);
                     cmbEnd.addItem(time);
-                    
                 }
             }
             
@@ -228,7 +242,7 @@ public class CalendarView{
             calendarPanel.add(btnNext);
             calendarPanel.add(scrollCalendarTable);
                
-            calendarPanel.setBounds(0, 0, 640, 370);
+            calendarPanel.setBounds(0, 0, 640, 670);
                 
             pane.add(eventPanel);
             eventPanel.add(eNameLabel);
@@ -246,7 +260,7 @@ public class CalendarView{
             eventPanel.add(cmbEnd);
             eventPanel.add(errorLbl);
                 
-            eventPanel.setBounds(0, 375, 640, 140);
+            eventPanel.setBounds(0, 670, 640, 140);
             eNameLabel.setBounds(20,20, 160, 30);
             eStart.setBounds(20, 50, 160, 30);
             eEnd.setBounds(20, 80, 160, 30);
@@ -257,18 +271,18 @@ public class CalendarView{
             eName.setBounds(70,20, 160, 30);
             cmbStart.setBounds(90,50,150,30);
             cmbEnd.setBounds(90,80,150,30);
-            eYear.setBounds(300,20, 160, 30);
-            eMonth.setBounds(300,50, 160, 30);
-            eDay.setBounds(300,80, 160, 30);
+            eYear.setBounds(300,20, 110, 30);
+            eMonth.setBounds(300,50, 110, 30);
+            eDay.setBounds(300,80, 110, 30);
                 
-            btnAdd.setBounds(480,20, 100, 35);
-            errorLbl.setBounds(480, 55, 160, 30);
+            btnAdd.setBounds(520,20, 100, 35);
+            errorLbl.setBounds(520, 55, 160, 30);
             errorLbl.setForeground(Color.red);
             errorLbl.setVisible(false);
                 
             pane.setBackground(new Color(220,220,220));
-            eventPanel.setBackground(Color.LIGHT_GRAY);
-            calendarPanel.setBackground(Color.LIGHT_GRAY);
+            eventPanel.setBackground(Color.WHITE);
+            calendarPanel.setBackground(Color.WHITE);
 		
             // SETS CURRENT DATE
             GregorianCalendar cal = new GregorianCalendar();
@@ -296,31 +310,74 @@ public class CalendarView{
             calendarTable.setRowHeight(30);
             
             agendaPanel = new JPanel();
-            agendaPanel.setBounds(230, 35, 390, 317);
+            agendaPanel.setBounds(230, 35, 390, 575);
             agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda for Today"));
+            agendaPanel.setBackground(Color.white);
             calendarPanel.add(agendaPanel);
             
-            lblTodoList = new JLabel("To-do List");
-            lblTodoList.setBounds(25, 304, 94, 16);
-            calendarPanel.add(lblTodoList);
-            
-            btnCreateTodo = new JButton("Create To-do");
-            btnCreateTodo.setBounds(6, 321, 113, 29);
+            btnCreateTodo = new JButton();
+            btnCreateTodo.setBounds(19, 290, 100, 70);
             btnCreateTodo.addActionListener(new btnCreateTodo_Action());
             calendarPanel.add(btnCreateTodo);
             
-            lblEventsList = new JLabel("Event/s List");
-            lblEventsList.setBounds(128, 303, 94, 16);
-            calendarPanel.add(lblEventsList);
+            try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/todoAdd.png")));
+            btnCreateTodo.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
+            } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
+            }
             
-            btnCreateEvent = new JButton("Create Event");
-            btnCreateEvent.setBounds(116, 320, 110, 29);
+            btnCreateEvent = new JButton();
+            btnCreateEvent.setBounds(19, 360, 100, 70);
             btnCreateEvent.addActionListener(new btnCreateEvent_Action());
             calendarPanel.add(btnCreateEvent);
             
+            try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/eventAdd.png")));
+            btnCreateEvent.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
+            } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
+            }
+            
+            btnViewEvent = new JButton();
+            btnViewEvent.setBounds(120, 360, 100, 70);
+            // btnViewEvent.addActionListener(new btnCreateEvent_Action());
+            calendarPanel.add(btnViewEvent);
+            
+            try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/event.png")));
+            btnViewEvent.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
+            } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
+            }
+            
+            btnViewTodo = new JButton();
+            btnViewTodo.setBounds(120, 290, 100, 70);
+            // btnViewEvent.addActionListener(new btnCreateEvent_Action());
+            calendarPanel.add(btnViewTodo);
+            
+            try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/todo.png")));
+            btnViewTodo.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
+            } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
+            }
+            
+            btnViewAgenda = new JButton();
+            btnViewAgenda.setBounds(120, 430, 100, 70);
+            // btnViewEvent.addActionListener(new btnCreateEvent_Action());
+            calendarPanel.add(btnViewAgenda);
+            
+            try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/agenda.png")));
+            btnViewAgenda.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
+            } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
+            }
+            
             schedPanel = new JPanel();
-            schedPanel.setBackground(Color.LIGHT_GRAY);
-            schedPanel.setBounds(645, 0, 260, 515);
+            schedPanel.setBackground(Color.white);
+            schedPanel.setBounds(645, 0, 260, 810);
             pane.add(schedPanel);
             
             schedPanel.setBorder(BorderFactory.createTitledBorder("Schedule Today"));
@@ -332,6 +389,38 @@ public class CalendarView{
                 eYear.addItem(String.valueOf(i));
             }
             yearToday += 100;
+            
+            monthLabel.setFont(dom);
+            yearLabel.setFont(dom);
+            calendarTable.setFont(dom);
+            ((javax.swing.border.TitledBorder) calendarPanel.getBorder()).
+            setTitleFont(dom);
+            btnCreateEvent.setFont(dom);
+            btnCreateTodo.setFont(dom);
+            cmbYear.setFont(dom);
+            
+            ((javax.swing.border.TitledBorder) schedPanel.getBorder()).
+            setTitleFont(dom);
+            ((javax.swing.border.TitledBorder) agendaPanel.getBorder()).
+            setTitleFont(dom);
+            ((javax.swing.border.TitledBorder) eventPanel.getBorder()).
+            setTitleFont(dom);
+            eNameLabel.setFont(dom);
+            eYearLabel.setFont(dom);
+            eMonthLabel.setFont(dom);
+            eDayLabel.setFont(dom);
+            eYear.setFont(dom);
+            eMonth.setFont(dom);
+            eDay.setFont(dom);
+            eName.setFont(dom);
+            eStart.setFont(dom);
+            eEnd.setFont(dom);
+            cmbStart.setFont(dom);
+            cmbEnd.setFont(dom);
+            errorLbl.setFont(dom);
+            btnAdd.setFont(dom);
+            
+            pane.setBackground(Color.white);
             
             frmMain.setResizable(false);
             frmMain.setVisible(true);
@@ -368,7 +457,6 @@ public class CalendarView{
 		} else {
                     monthToday += 1;
 		}
-                calendarTable.changeSelection(-1, -1, true, true);
 
                 refreshCalendar(monthToday, yearToday);
                 reset();
@@ -383,6 +471,8 @@ public class CalendarView{
                     yearToday = Integer.parseInt(b);
                     refreshCalendar(monthToday, yearToday);
                     reset();
+                    if (controller != null)
+                        controller.updateViews(curYear, curMonth, curDay);
 		}
             }
 	}
@@ -400,7 +490,7 @@ public class CalendarView{
                     eTime = Integer.parseInt(cmbEnd.getSelectedItem().toString().replace(":", ""));
                 else {
                     eTime = sTime + 30;
-                    if (eTime % 100 > 60) {
+                    if (eTime % 100 >= 60) {
                         int min = eTime % 100;
                         eTime = (eTime / 100) + 1;
                         if (eTime > 23)
@@ -411,10 +501,16 @@ public class CalendarView{
                 }
                     
                 Event event = new Event(name,addMode,false,year,month,day,sTime,eTime);
-                if (!name.isEmpty()) {
-                    errorLbl.setVisible(false);
-                    controller.addEvent(event);
-                    reset();
+                if (!name.isEmpty() && sTime != eTime && sTime < eTime) {
+                    if (!overlap(event, controller.getEvents(year, month, day))) {
+                        errorLbl.setVisible(false);
+                        controller.addEvent(event);
+                        reset();
+                    }
+                    else {
+                        errorLbl.setText("<html>OVERLAPPING </br> EVENTS!</html>");
+                        errorLbl.setVisible(true);
+                    }
                 }
                 else {
                     errorLbl.setText("INVALID INPUT");
@@ -422,6 +518,31 @@ public class CalendarView{
                 }   
             }
 	}
+        
+        // Checks if event e overlaps with any event in Events list events
+        public boolean overlap(Event e, List<Event> events) {
+            int i=0;
+            
+            while(i < events.size())
+            {
+                if(events.get(i).getYear() == e.getYear() && events.get(i).getMonth() == e.getMonth() && events.get(i).getDay() == e.getDay())
+                {
+                    // CASE: SAME TIME SLOT
+                    if((events.get(i).getStartTime() == e.getStartTime()) && (events.get(i).getEndTime() == e.getEndTime()))
+                        return true;
+                    // CASE: EVENT IS WITHIN
+                    if((events.get(i).getStartTime() <= e.getStartTime() && events.get(i).getEndTime() >= e.getEndTime()))
+                        return true;
+                    // CASE: EVENT IS WITHOUT
+                    if((events.get(i).getStartTime() >= e.getStartTime() && events.get(i).getEndTime() <= e.getEndTime()))
+                        return true;
+                    
+                }
+                i++;
+            }
+            return false;
+        }
+        
         class btnCreateEvent_Action implements ActionListener {
             @Override
             public void actionPerformed (ActionEvent e) {
@@ -431,6 +552,8 @@ public class CalendarView{
                 eventPanel.add(eEnd);
                 eventPanel.remove(cmbEnd);
                 eventPanel.add(cmbEnd);
+                ((javax.swing.border.TitledBorder) eventPanel.getBorder()).
+                setTitleFont(dom);
                 
                 reset();
             }
@@ -442,6 +565,10 @@ public class CalendarView{
                 eventPanel.remove(cmbEnd);
                 eventPanel.setBorder(BorderFactory.createTitledBorder("Create To-do"));
                 addMode = "todo";
+                
+                ((javax.swing.border.TitledBorder) eventPanel.getBorder()).
+                setTitleFont(dom);
+                
                 reset();
             }
 	}
@@ -454,13 +581,19 @@ public class CalendarView{
                     String val = calendarTable.getValueAt(calendarTable.getSelectedRow(), calendarTable.getSelectedColumn()).toString();
                     val = val.replaceAll("\\D+","");
                     eDay.setSelectedItem(val);
+                    eMonth.setSelectedIndex(curMonth-1);
                     curDay = Integer.valueOf(val.trim());
+                    eYear.setSelectedItem(""+curYear);
                     
                     System.out.println("SELECT * " + " FROM " + Event.TABLE + " WHERE " + 
                         Event.COL_YEAR + " = " + curYear + " AND " +
                         Event.COL_MONTH + " = " + curMonth + " AND " +
                         Event.COL_DAY + " = " + curDay);
                     controller.updateViews(curYear, curMonth, curDay);
+                    
+                    agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda for " + curMonth + "/" + curDay + "/" + curYear));
+                    ((javax.swing.border.TitledBorder) agendaPanel.getBorder()).
+                    setTitleFont(dom);
             }
         }        
 }

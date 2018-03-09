@@ -90,7 +90,7 @@ public class CalendarService {
 	String query = 	"SELECT * FROM " + Event.TABLE + " WHERE " + 
                         Event.COL_YEAR + " = ? AND " +
                         Event.COL_MONTH + " = ? AND " +
-                        Event.COL_DAY + " = ?";
+                        Event.COL_DAY + " = ? ORDER BY " + Event.COL_STIME;
 
         try {
             PreparedStatement statement = connect.prepareStatement(query);

@@ -37,23 +37,23 @@ public class ScheduleView extends JPanel{
         items.clear();
         
         for (int hour = 0; hour < 24; hour++) {
-                for (int min = 0; min < 60; min += 30) {
-                    String hourString = String.valueOf(hour);
-                    if (hourString.length() == 1)
-                        hourString = "0"+hourString;
-                    String minString = String.valueOf(min);
-                    if (minString.length() == 1)
-                        minString = "0"+minString;
-                    String time = hourString + ":" + minString;
-                    items.add(new ScheduleItem(controller, time));
-                }
+            for (int min = 0; min < 60; min += 30) {
+                String hourString = String.valueOf(hour);
+                if (hourString.length() == 1)
+                    hourString = "0"+hourString;
+                String minString = String.valueOf(min);
+                if (minString.length() == 1)
+                    minString = "0"+minString;
+                String time = hourString + ":" + minString;
+                items.add(new ScheduleItem(controller, time));
+            }
         }
         
         for (int i = 0; i < items.size(); i++) {
-		add(items.get(i));
-            }
+            add(items.get(i));
+        }
         
-        setPreferredSize(new Dimension(260, items.size() * 47 + 20));
+        setPreferredSize(new Dimension(260, items.size() * 40 + 30));
         
         revalidate();
         repaint();

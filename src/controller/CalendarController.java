@@ -6,6 +6,7 @@
 package controller;
 
 import java.util.GregorianCalendar;
+import java.util.List;
 import model.CalendarService;
 import model.Event;
 import view.CalendarView;
@@ -55,5 +56,9 @@ public class CalendarController {
     
     public void updateViews (int year, int month, int day) {
         view.setAgendaItems(model.getEvents(year, month, day));
+    }
+    
+    public List<Event> getEvents (int year, int month, int day) {
+        return model.getEvents(year, month, day);
     }
 }
