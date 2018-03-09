@@ -53,7 +53,7 @@ public class ScheduleView extends JPanel{
             add(items.get(i));
         }
         
-        setPreferredSize(new Dimension(260, items.size() * 44 + 30));
+        setPreferredSize(new Dimension(260, items.size() * 40 + 30));
         
         revalidate();
         repaint();

@@ -80,14 +80,14 @@ public class CalendarView{
             agendaScroll = new JScrollPane(av);
             agendaScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             agendaScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            agendaScroll.setPreferredSize(new Dimension(390,575));
+            agendaScroll.setPreferredSize(new Dimension(390,460));
             agendaPanel.add(agendaScroll);
             
             this.sv = new ScheduleView(c);
             scheduleScroll = new JScrollPane(sv);
             scheduleScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
             scheduleScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
-            scheduleScroll.setPreferredSize(new Dimension(260,810));
+            scheduleScroll.setPreferredSize(new Dimension(260,650));
             schedPanel.add(scheduleScroll);
         }
         
@@ -163,7 +163,7 @@ public class CalendarView{
             frmMain = new JFrame ("Productivity Application");
             frmMain.setBackground(Color.WHITE);
             // frmMain.setSize(660, 750);
-            frmMain.setSize(910, 681);
+            frmMain.setSize(910, 680);
             pane = frmMain.getContentPane();
             pane.setLayout(null);
             frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -310,7 +310,7 @@ public class CalendarView{
             calendarTable.setRowHeight(30);
             
             agendaPanel = new JPanel();
-            agendaPanel.setBounds(230, 35, 390, 463);
+            agendaPanel.setBounds(230, 35, 390, 460);
             agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda for Today"));
             agendaPanel.setBackground(Color.white);
             calendarPanel.add(agendaPanel);
@@ -377,7 +377,7 @@ public class CalendarView{
             
             schedPanel = new JPanel();
             schedPanel.setBackground(Color.white);
-            schedPanel.setBounds(645, 0, 260, 653);
+            schedPanel.setBounds(645, 0, 260, 650);
             pane.add(schedPanel);
             
             schedPanel.setBorder(BorderFactory.createTitledBorder("Schedule Today"));

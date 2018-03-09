@@ -54,7 +54,7 @@ public class AgendaView extends JPanel{
             }
         }
         
-        setPreferredSize(new Dimension(390, items.size() * 40 + 20));
+        setPreferredSize(new Dimension(390, items.size() * 40 + 30));
         
         revalidate();
         repaint();
