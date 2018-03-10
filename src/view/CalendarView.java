@@ -352,6 +352,10 @@ public class CalendarView{
             }
             
             btnViewTodo = new JButton();
+            btnViewTodo.addActionListener(new ActionListener() {
+            	public void actionPerformed(ActionEvent e) {
+            	}
+            });
             btnViewTodo.setBounds(120, 290, 100, 70);
             // btnViewEvent.addActionListener(new btnCreateEvent_Action());
             calendarPanel.add(btnViewTodo);
@@ -536,7 +540,9 @@ public class CalendarView{
                     // CASE: EVENT IS WITHOUT
                     if((events.get(i).getStartTime() >= e.getStartTime() && events.get(i).getEndTime() <= e.getEndTime()))
                         return true;
-                    
+                    //CASE: NORMAL OVERLAP
+                    if((events.get(i).getStartTime() < e.getStartTime() && events.get(i).getEndTime() > e.getStartTime()) || (events.get(i).getStartTime() < e.getEndTime() && events.get(i).getEndTime() > e.getEndTime()))
+                    		return true;
                 }
                 i++;
             }
