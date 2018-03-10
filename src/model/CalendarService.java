@@ -14,7 +14,7 @@ import java.util.List;
 
 /**
  *
- * @author ianona
+ * @author ianona, wonsukcho
  */
 public class CalendarService {
     private CalendarDB connection;

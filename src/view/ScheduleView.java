@@ -15,7 +15,7 @@ import model.Event;
 
 /**
  *
- * @author ianona
+ * @author ianona, wonsukcho
  */
 public class ScheduleView extends JPanel{
     CalendarController controller;
@@ -45,7 +45,7 @@ public class ScheduleView extends JPanel{
                 if (minString.length() == 1)
                     minString = "0"+minString;
                 String time = hourString + ":" + minString;
-                items.add(new ScheduleItem(controller, time));
+                items.add(new ScheduleItem(controller, time, events));
             }
         }
         

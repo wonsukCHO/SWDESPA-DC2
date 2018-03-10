@@ -11,7 +11,7 @@ import java.sql.SQLException;
 
 /**
  *
- * @author ianona
+ * @author ianona, wonsukcho
  */
 public class CalendarDB {
     private final static String DRIVER_NAME = "com.mysql.jdbc.Driver";

@@ -13,7 +13,7 @@ import view.CalendarView;
 
 /**
  *
- * @author ianona
+ * @author ianona, wonsukcho
  */
 public class CalendarController {
     private CalendarService model;
@@ -27,18 +27,21 @@ public class CalendarController {
     public void deleteEvent(Event e) {
         model.deleteEvent(e.getName());
         view.setAgendaItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
+        view.setScheduleItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
         view.refresh();
     }
 	
     public void addEvent(Event e) {
 	model.addEvent(e);
         view.setAgendaItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
+        view.setScheduleItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
         view.refresh();
     }
 	
     public void updateEvent(Event e) {
         model.updateEvent(e);
         view.setAgendaItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
+        view.setScheduleItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
         view.refresh();
     }
 
@@ -56,6 +59,7 @@ public class CalendarController {
     
     public void updateViews (int year, int month, int day) {
         view.setAgendaItems(model.getEvents(year, month, day));
+        view.setScheduleItems(model.getEvents(year, month, day));
     }
     
     public List<Event> getEvents (int year, int month, int day) {

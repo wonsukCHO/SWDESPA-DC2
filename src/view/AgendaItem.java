@@ -29,7 +29,7 @@ import model.Event;
 
 /**
  *
- * @author ianona
+ * @author ianona, wonsukcho
  */
 public class AgendaItem extends JPanel {
     private Event event;
@@ -93,10 +93,12 @@ public class AgendaItem extends JPanel {
         this.event = e;
         
         if (e.getType().equalsIgnoreCase("event")) {
+        	//blue
             setBackground(new Color(102,143,255)); 
             chkDone.setEnabled(false);
         }
         else
+        	//yellow
             setBackground(new Color(255,200,80));
         
         String startTime = String.valueOf(e.getStartTime());

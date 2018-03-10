@@ -15,7 +15,7 @@ import model.Event;
 
 /**
  *
- * @author ianona
+ * @author ianona, wonsukcho
  */
 public class AgendaView extends JPanel{
     CalendarController controller;

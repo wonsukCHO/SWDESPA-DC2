@@ -7,7 +7,7 @@ package model;
 
 /**
  *
- * @author ianona
+ * @author ianona, wonsukcho
  */
 public class Event {
     private int year, month, day, startTime, endTime;

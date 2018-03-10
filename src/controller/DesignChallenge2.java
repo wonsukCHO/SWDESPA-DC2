@@ -11,7 +11,7 @@ import view.CalendarView;
 
 /**
  *
- * @author ianona
+ * @author ianona, wonsukcho
  */
 public class DesignChallenge2 {
     public static void main (String args[]) {
