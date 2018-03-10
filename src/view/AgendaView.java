@@ -29,7 +29,7 @@ public class AgendaView extends JPanel{
 	VerticalFlowLayout.TOP, 0, 0));
     }
     
-    public void setItems (List <Event> events) {
+    public void setItems (List <Event> events, String mode) {
         for (int i = 0; i < items.size(); i++) {
                 remove(items.get(i));
         }
@@ -46,7 +46,12 @@ public class AgendaView extends JPanel{
             }
             
             for (int i = 0; i < events.size(); i++) {
-		items.add(new AgendaItem(controller, events.get(i)));
+                if (mode.equalsIgnoreCase("agenda"))
+                    items.add(new AgendaItem(controller, events.get(i)));
+                else {
+                    if (events.get(i).getType().equalsIgnoreCase(mode))
+                        items.add(new AgendaItem(controller, events.get(i)));
+                }
             }
 			
             for (int i = 0; i < items.size(); i++) {
