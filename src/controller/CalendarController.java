@@ -52,9 +52,8 @@ public class CalendarController {
         int dayBound = cal.get(GregorianCalendar.DAY_OF_MONTH);
         int monthBound = cal.get(GregorianCalendar.MONTH);
         int yearBound = cal.get(GregorianCalendar.YEAR);
-        
-	view.setAgendaItems(model.getEvents(yearBound, monthBound + 1, dayBound));
-        view.setScheduleItems(model.getEvents(yearBound, monthBound + 1, dayBound));
+	view.setAgendaItems(model.getEvents(yearBound, monthBound, dayBound));
+        view.setScheduleItems(model.getEvents(yearBound, monthBound, dayBound));
         view.refresh();
     }
     

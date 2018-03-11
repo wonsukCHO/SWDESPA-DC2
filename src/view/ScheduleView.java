@@ -29,7 +29,7 @@ public class ScheduleView extends JPanel{
 	VerticalFlowLayout.TOP, 0, 0));
     }
     
-    public void setItems (List <Event> events, String mode) {
+    public void setItems (List <Event> events) {
         for (int i = 0; i < items.size(); i++) {
                 remove(items.get(i));
         }
@@ -53,7 +53,7 @@ public class ScheduleView extends JPanel{
             add(items.get(i));
         }
         
-        setPreferredSize(new Dimension(260, items.size() * 45 + 30));
+        setPreferredSize(new Dimension(260, items.size() * 40 + 30));
         
         revalidate();
         repaint();

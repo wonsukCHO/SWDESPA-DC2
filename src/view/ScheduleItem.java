@@ -10,6 +10,8 @@ import java.io.FileInputStream;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import model.Event;
@@ -30,7 +32,6 @@ public class ScheduleItem extends JPanel{
     private Font dom;
     
     private JLabel sName;
-    private JLabel time;
     
     public ScheduleItem() {
         // add font from file
@@ -43,13 +44,10 @@ public class ScheduleItem extends JPanel{
         }
         
         sName = new JLabel();
-        time = new JLabel();
         
-        time.setFont(dom);
         
-        this.add(time);
         
-        setPreferredSize(new Dimension(260,45));
+        setPreferredSize(new Dimension(260,40));
         setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
     }
     
@@ -57,10 +55,9 @@ public class ScheduleItem extends JPanel{
         this();
         this.controller = c;
         this.setBackground(Color.white);
-        //this.setBorder(BorderFactory.createTitledBorder(time));
-        //((javax.swing.border.TitledBorder) this.getBorder()).
-        //setTitleFont(dom);
-        this.time.setText(time);
+        this.setBorder(BorderFactory.createTitledBorder(time));
+        ((javax.swing.border.TitledBorder) this.getBorder()).
+        setTitleFont(dom);
         time = time.replaceAll(":","");
         int numTime = Integer.valueOf(time);
         
@@ -68,43 +65,33 @@ public class ScheduleItem extends JPanel{
         {
             if(events.get(i).getType().equalsIgnoreCase("event"))
             {
-                if(numTime < events.get(i).getEndTime() && numTime > events.get(i).getStartTime()) {
+                if(numTime == events.get(i).getStartTime() || (numTime < events.get(i).getEndTime() && numTime > events.get(i).getStartTime()))
                     this.setBackground(new Color(102,143,255));
-                }
-                    
                 
                 if(numTime == events.get(i).getStartTime())
                 {
-                    this.setBackground(new Color(102,143,255));
-                    
-                    if (events.get(i).isDone())
-                        sName.setText("<html><strike>"+events.get(i).getName()+"</strike></html>");
-                    else
-                        sName.setText(events.get(i).getName());
-                    sName.setFont(dom);
-                    //this.add(new JLabel("          "));
-                    this.add(sName);
+                		sName.setText(events.get(i).getName());
+                		sName.setFont(dom);
+                		this.add(sName);
                 }
             } 
             else
             {
-                if(numTime < events.get(i).getEndTime() && numTime > events.get(i).getStartTime()) {
+                if(numTime == events.get(i).getStartTime() || (numTime < events.get(i).getEndTime() && numTime > events.get(i).getStartTime()))
                     this.setBackground(new Color(255,200,80));
-                }
-                    
                 
                 if(numTime == events.get(i).getStartTime())
                 {
-                    this.setBackground(new Color(255,200,80));
-                    if (events.get(i).isDone())
-                        sName.setText("<html><strike>"+events.get(i).getName()+"</strike></html>");
-                    else
-                        sName.setText(events.get(i).getName());
-                    sName.setFont(dom);
-                    //this.add(new JLabel("          "));
-                    this.add(sName);
+                		sName.setText(events.get(i).getName());
+                		sName.setFont(dom);
+                		this.add(sName);
                 }
             }
         }
+        //if(numTime > 1200)
+        //{
+        //		this.setBackground(Color.red);
+        //}
+        
     }
 }
