@@ -74,6 +74,7 @@ public class CalendarView{
         private Font dom;
         private String viewMode;
 
+        // attaches controller to view, initalizes schedule and agenda
         public void attach (CalendarController c) {
             this.controller = c;
 
