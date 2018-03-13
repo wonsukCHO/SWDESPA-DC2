@@ -28,6 +28,7 @@ public class CalendarController {
         model.deleteEvent(e.getName());
         view.setAgendaItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
         view.setScheduleItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
+        view.updateWeeklyView();
         view.refresh();
     }
 	
@@ -35,6 +36,7 @@ public class CalendarController {
 	model.addEvent(e);
         view.setAgendaItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
         view.setScheduleItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
+        view.updateWeeklyView();
         view.refresh();
     }
 	
@@ -42,6 +44,7 @@ public class CalendarController {
         model.updateEvent(e);
         view.setAgendaItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
         view.setScheduleItems(model.getEvents(e.getYear(), e.getMonth(), e.getDay()));
+        view.updateWeeklyView();
         view.refresh();
     }
 
@@ -59,11 +62,16 @@ public class CalendarController {
     }
     
     public void updateViews (int year, int month, int day) {
-        view.setAgendaItems(model.getEvents(year, month, day));
+    view.setAgendaItems(model.getEvents(year, month, day));
         view.setScheduleItems(model.getEvents(year, month, day));
+        view.updateWeeklyView();
     }
     
     public List<Event> getEvents (int year, int month, int day) {
         return model.getEvents(year, month, day);
+    }
+    
+    public List<Event> getAllEvents () {
+        return model.getAll();
     }
 }

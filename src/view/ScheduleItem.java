@@ -28,6 +28,7 @@ public class ScheduleItem extends JPanel{
     private Event event;
     private CalendarController controller;
     private Font dom;
+    private String type = null;
     
     private JLabel sName;
     private JLabel time;
@@ -57,9 +58,7 @@ public class ScheduleItem extends JPanel{
         this();
         this.controller = c;
         this.setBackground(Color.white);
-        //this.setBorder(BorderFactory.createTitledBorder(time));
-        //((javax.swing.border.TitledBorder) this.getBorder()).
-        //setTitleFont(dom);
+
         this.time.setText(time);
         time = time.replaceAll(":","");
         int numTime = Integer.valueOf(time);
@@ -70,9 +69,9 @@ public class ScheduleItem extends JPanel{
             {
                 if(numTime < events.get(i).getEndTime() && numTime > events.get(i).getStartTime()) {
                     this.setBackground(new Color(102,143,255));
+                    type = "event";
                 }
                     
-                
                 if(numTime == events.get(i).getStartTime())
                 {
                     this.setBackground(new Color(102,143,255));
@@ -82,16 +81,18 @@ public class ScheduleItem extends JPanel{
                     else
                         sName.setText(events.get(i).getName());
                     sName.setFont(dom);
-                    //this.add(new JLabel("          "));
+
                     this.add(sName);
+                    type = "event";
+                    this.setBorder(BorderFactory.createMatteBorder(2,0,0,0,Color.white));
                 }
             } 
-            else
+            else if (events.get(i).getType().equalsIgnoreCase("todo"))
             {
                 if(numTime < events.get(i).getEndTime() && numTime > events.get(i).getStartTime()) {
                     this.setBackground(new Color(255,200,80));
+                    type = "todo";
                 }
-                    
                 
                 if(numTime == events.get(i).getStartTime())
                 {
@@ -103,8 +104,20 @@ public class ScheduleItem extends JPanel{
                     sName.setFont(dom);
                     //this.add(new JLabel("          "));
                     this.add(sName);
+                    type = "todo";
+                    this.setBorder(BorderFactory.createMatteBorder(2,0,0,0,Color.white));
                 }
+                
             }
+        }
+    }
+    
+    public void refresh(Color c1, Color c2) {
+        if (type != null) {
+            if (type.equalsIgnoreCase("event"))
+                this.setBackground(c1);
+            else 
+                this.setBackground(c2);
         }
     }
 }

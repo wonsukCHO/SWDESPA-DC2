@@ -8,7 +8,9 @@ package view;
 import controller.CalendarController;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.swing.JPanel;
 import model.Event;
@@ -29,6 +31,22 @@ public class AgendaView extends JPanel{
 	VerticalFlowLayout.TOP, 0, 0));
     }
     
+    public void refresh (Color c1, Color c2) {
+        for (int i = 0; i < items.size(); i++) {
+            items.get(i).refresh(c1, c2);
+            items.get(i).repaint();
+            items.get(i).revalidate();
+        }
+    }
+    
+    public void expireEvents () {
+        for (int i = 0; i < items.size(); i++) {
+            items.get(i).expireEvents();
+            items.get(i).repaint();
+            items.get(i).revalidate();
+        }
+    }
+    
     public void setItems (List <Event> events, String mode) {
         for (int i = 0; i < items.size(); i++) {
                 remove(items.get(i));
@@ -41,17 +59,15 @@ public class AgendaView extends JPanel{
             add(items.get(0));
         }
         else {
-            for (int i = 0; i < events.size();i++) {
-                System.out.println(events.get(i).toString());
-            }
             
             for (int i = 0; i < events.size(); i++) {
-                if (mode.equalsIgnoreCase("agenda"))
-                    items.add(new AgendaItem(controller, events.get(i)));
-                else {
-                    if (events.get(i).getType().equalsIgnoreCase(mode))
+                if (mode.equalsIgnoreCase("agenda")) {
                         items.add(new AgendaItem(controller, events.get(i)));
                 }
+                else if (events.get(i).getType().equalsIgnoreCase(mode)) {
+                        items.add(new AgendaItem(controller, events.get(i)));
+                }
+                    
             }
 			
             for (int i = 0; i < items.size(); i++) {

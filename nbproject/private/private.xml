@@ -3,15 +3,14 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/view/WeeklyView.java</file>
             <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/controller/CalendarController.java</file>
             <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/view/ScheduleView.java</file>
-            <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/controller/DesignChallenge2.java</file>
             <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/view/CalendarView.java</file>
+            <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/controller/DesignChallenge2.java</file>
             <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/view/AgendaView.java</file>
-            <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/model/CalendarDB.java</file>
             <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/view/AgendaItem.java</file>
             <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/view/ScheduleItem.java</file>
-            <file>file:/Users/ianona/Desktop/SWDESPA/SWDESPA-DC2/src/model/CalendarService.java</file>
         </group>
     </open-files>
 </project-private>

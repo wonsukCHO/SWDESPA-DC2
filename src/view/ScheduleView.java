@@ -29,7 +29,15 @@ public class ScheduleView extends JPanel{
 	VerticalFlowLayout.TOP, 0, 0));
     }
     
-    public void setItems (List <Event> events, String mode) {
+    public void refresh (Color c1, Color c2) {
+        for (int i = 0; i < items.size(); i++) {
+            items.get(i).refresh(c1, c2);
+            items.get(i).repaint();
+            items.get(i).revalidate();
+        }
+    }
+    
+    public void setItems (List <Event> events) {
         for (int i = 0; i < items.size(); i++) {
                 remove(items.get(i));
         }

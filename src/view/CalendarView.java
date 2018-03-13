@@ -22,10 +22,14 @@ import javax.swing.*;
 import javax.swing.table.*;
 import java.util.List;
 import java.awt.event.*;
+import java.awt.geom.RoundRectangle2D;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import javax.imageio.ImageIO;
 
@@ -58,7 +62,7 @@ public class CalendarView{
         /***DC2 COMPONENTS***/
         private JPanel agendaPanel;
         private JPanel schedPanel;
-        private JButton btnCreateEvent, btnCreateTodo, btnViewEvent, btnViewTodo, btnViewAgenda;
+        private JButton btnCreateEvent, btnViewEvent, btnViewAgenda, btnToday, btnCount, btnColor, btnWeek;
         private JLabel eStart, eEnd;
         private JComboBox cmbStart, cmbEnd;
         private String addMode;
@@ -73,6 +77,10 @@ public class CalendarView{
         private JLabel errorLbl;
         private Font dom;
         private String viewMode;
+        private Color eventColor = new Color(102,143,255), todoColor = new Color(255,200,80);
+        private WeeklyView wv;
+        private JLabel startDayLbl, endDayLbl;
+        private JComboBox eYear2, eMonth2, eDay2;
 
         // attaches controller to view, initalizes schedule and agenda
         public void attach (CalendarController c) {
@@ -96,10 +104,20 @@ public class CalendarView{
 
         public void setAgendaItems (List<Event> events) {
             av.setItems(events, viewMode);
+            av.refresh(eventColor, todoColor);
+            av.expireEvents();
+        }
+        
+        public void updateWeeklyView () {
+            if (wv != null) {
+                wv.update(getWeekInfo());
+                wv.refresh(eventColor, todoColor);
+            }
         }
 
         public void setScheduleItems (List<Event> events) {
-            sv.setItems(events, viewMode);
+            sv.setItems(events);
+            sv.refresh(eventColor, todoColor);
         }
 
         public void refresh() {
@@ -128,24 +146,31 @@ public class CalendarView{
             som = cal.get(GregorianCalendar.DAY_OF_WEEK);
 
             eDay.removeAllItems();
+            eDay2.removeAllItems();
 
             // SET THE CALENDAR NUMBERS
             for (i = 1; i <= nod; i++) {
 		int row = (i+som-2)/7;
 		int column  =  (i+som-2)%7;
 		modelCalendarTable.setValueAt(i, row, column);
+                
                 eDay.addItem(String.valueOf(i));
+                eDay2.addItem(String.valueOf(i));
             }
 
             cmbYear.setSelectedItem(""+year);
             eDay.setSelectedItem(""+1);
             eYear.setSelectedItem(""+year);
+            
+            eDay2.setSelectedItem(""+1);
+            eYear2.setSelectedItem(""+year);
 
             curYear = year;
             curMonth = month + 1;
             curDay = 1;
 
             eMonth.setSelectedItem(months[month]);
+            eMonth2.setSelectedItem(months[month]);
             calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0), new TableRenderer());
 
             agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda for " + curMonth + "/" + curDay + "/" + curYear));
@@ -215,6 +240,11 @@ public class CalendarView{
             eYear = new JComboBox();
             eMonth = new JComboBox(months);
             eDay = new JComboBox();
+            
+            eYear2 = new JComboBox();
+            eMonth2 = new JComboBox(months);
+            eDay2 = new JComboBox();
+            
             eName = new JTextField(15);
             eStart = new JLabel("Start Time:");
             eEnd = new JLabel("End Time:");
@@ -266,6 +296,11 @@ public class CalendarView{
             eventPanel.add(eYear);
             eventPanel.add(eMonth);
             eventPanel.add(eDay);
+            
+            eventPanel.add(eYear2);
+            eventPanel.add(eMonth2);
+            eventPanel.add(eDay2);
+            
             eventPanel.add(btnAdd);
             eventPanel.add(eStart);
             eventPanel.add(eEnd);
@@ -277,16 +312,29 @@ public class CalendarView{
             eNameLabel.setBounds(20,20, 160, 30);
             eStart.setBounds(20, 50, 160, 30);
             eEnd.setBounds(20, 80, 160, 30);
-            eYearLabel.setBounds(250,20, 160, 30);
-            eMonthLabel.setBounds(250,50, 160, 30);
-            eDayLabel.setBounds(250,80, 160, 30);
+            eYearLabel.setBounds(250,40, 160, 30);
+            eMonthLabel.setBounds(250,70, 160, 30);
+            eDayLabel.setBounds(250,100, 160, 30);
 
             eName.setBounds(70,20, 160, 30);
             cmbStart.setBounds(90,50,150,30);
             cmbEnd.setBounds(90,80,150,30);
-            eYear.setBounds(300,20, 110, 30);
-            eMonth.setBounds(300,50, 110, 30);
-            eDay.setBounds(300,80, 110, 30);
+            eYear.setBounds(300,40, 110, 30);
+            eMonth.setBounds(300,70, 110, 30);
+            eDay.setBounds(300,100, 110, 30);
+            
+            eYear2.setBounds(410,40, 110, 30);
+            eMonth2.setBounds(410,70, 110, 30);
+            eDay2.setBounds(410,100, 110, 30);
+            
+            startDayLbl = new JLabel("START DAY");
+            endDayLbl = new JLabel("END DAY");
+            startDayLbl.setBounds(300, 15, 160, 30);
+            endDayLbl.setBounds(420, 15, 160, 30);
+            startDayLbl.setFont(dom);
+            endDayLbl.setFont(dom);
+            eventPanel.add(startDayLbl);
+            eventPanel.add(endDayLbl);
 
             btnAdd.setBounds(520,20, 100, 35);
             errorLbl.setBounds(520, 55, 160, 30);
@@ -328,25 +376,13 @@ public class CalendarView{
             agendaPanel.setBackground(Color.white);
             calendarPanel.add(agendaPanel);
 
-            btnCreateTodo = new JButton();
-            btnCreateTodo.setBounds(19, 290, 100, 70);
-            btnCreateTodo.addActionListener(new btnCreateTodo_Action());
-            calendarPanel.add(btnCreateTodo);
-
-            try {
-            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/todoAdd.png")));
-            btnCreateTodo.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
-            } catch(IOException e) {
-            System.out.println("FILE NOT FOUND");
-            }
-
             btnCreateEvent = new JButton();
-            btnCreateEvent.setBounds(19, 360, 100, 70);
+            btnCreateEvent.setBounds(19, 290, 100, 70);
             btnCreateEvent.addActionListener(new btnCreateEvent_Action());
             calendarPanel.add(btnCreateEvent);
 
             try {
-            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/eventAdd.png")));
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/toggleAdd.png")));
             btnCreateEvent.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
             } catch(IOException e) {
             System.out.println("FILE NOT FOUND");
@@ -354,39 +390,74 @@ public class CalendarView{
 
             btnViewEvent = new JButton();
             btnViewEvent.setName("viewEvent");
-            btnViewEvent.setBounds(120, 360, 100, 70);
+            btnViewEvent.setBounds(120, 290, 100, 70);
             btnViewEvent.addActionListener(new btnView_Action());
             calendarPanel.add(btnViewEvent);
 
             try {
-            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/event.png")));
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/toggleView.png")));
             btnViewEvent.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
             } catch(IOException e) {
             System.out.println("FILE NOT FOUND");
             }
-
-            btnViewTodo = new JButton();
-            btnViewTodo.setName("viewTodo");
-            btnViewTodo.setBounds(120, 290, 100, 70);
-            btnViewTodo.addActionListener(new btnView_Action());
-            calendarPanel.add(btnViewTodo);
-
-            try {
-            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/todo.png")));
-            btnViewTodo.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
-            } catch(IOException e) {
-            System.out.println("FILE NOT FOUND");
-            }
-
+            
             btnViewAgenda = new JButton();
             btnViewAgenda.setName("viewAgenda");
-            btnViewAgenda.setBounds(120, 430, 100, 70);
+            btnViewAgenda.setBounds(120, 360, 100, 70);
             btnViewAgenda.addActionListener(new btnView_Action());
             calendarPanel.add(btnViewAgenda);
 
             try {
             ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/agenda.png")));
             btnViewAgenda.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
+            } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
+            }
+            
+            btnToday = new JButton();
+            btnToday.setBounds(19, 360, 50, 35);
+            btnToday.addActionListener(new btnToday_Action());
+            calendarPanel.add(btnToday);
+            
+            try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/today.png")));
+            btnToday.setIcon(new ImageIcon(icon.getImage().getScaledInstance(50,35, Image.SCALE_DEFAULT)));
+            } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
+            }
+            
+            btnCount = new JButton();
+            btnCount.setBounds(19, 395, 50, 35);
+            btnCount.addActionListener(new btnCount_Action());
+            calendarPanel.add(btnCount);
+            
+            try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/count.png")));
+            btnCount.setIcon(new ImageIcon(icon.getImage().getScaledInstance(50,35, Image.SCALE_DEFAULT)));
+            } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
+            }
+            
+            btnColor = new JButton();
+            btnColor.setBounds(70, 360, 50, 35);
+            btnColor.addActionListener(new btnColor_Action());
+            calendarPanel.add(btnColor);
+            
+            try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/color.png")));
+            btnColor.setIcon(new ImageIcon(icon.getImage().getScaledInstance(50,35, Image.SCALE_DEFAULT)));
+            } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
+            }
+            
+            btnWeek = new JButton();
+            btnWeek.setBounds(120, 430, 100,70);
+            btnWeek.addActionListener(new btnWeek_Action());
+            calendarPanel.add(btnWeek);
+            
+            try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("resources/week.png")));
+            btnWeek.setIcon(new ImageIcon(icon.getImage().getScaledInstance(100,70, Image.SCALE_DEFAULT)));
             } catch(IOException e) {
             System.out.println("FILE NOT FOUND");
             }
@@ -403,6 +474,7 @@ public class CalendarView{
             for (int i = yearBound-100; i <= yearBound+100; i++) {
 		cmbYear.addItem(String.valueOf(i));
                 eYear.addItem(String.valueOf(i));
+                eYear2.addItem(String.valueOf(i));
             }
             yearToday += 100;
 
@@ -412,7 +484,6 @@ public class CalendarView{
             ((javax.swing.border.TitledBorder) calendarPanel.getBorder()).
             setTitleFont(dom);
             btnCreateEvent.setFont(dom);
-            btnCreateTodo.setFont(dom);
             cmbYear.setFont(dom);
 
             ((javax.swing.border.TitledBorder) schedPanel.getBorder()).
@@ -428,6 +499,11 @@ public class CalendarView{
             eYear.setFont(dom);
             eMonth.setFont(dom);
             eDay.setFont(dom);
+            
+            eYear2.setFont(dom);
+            eMonth2.setFont(dom);
+            eDay2.setFont(dom);
+            
             eName.setFont(dom);
             eStart.setFont(dom);
             eEnd.setFont(dom);
@@ -441,8 +517,8 @@ public class CalendarView{
             frmMain.setResizable(false);
             frmMain.setVisible(true);
             refreshCalendar(monthToday, yearToday);
-            
             curDay = dayBound;
+            eDay.setSelectedItem(""+curDay);
             
             agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda for " + curMonth + "/" + curDay + "/" + curYear));
             ((javax.swing.border.TitledBorder) agendaPanel.getBorder()).
@@ -451,6 +527,12 @@ public class CalendarView{
             schedPanel.setBorder(BorderFactory.createTitledBorder("Schedule for " + curMonth + "/" + curDay + "/" + curYear));
             ((javax.swing.border.TitledBorder) schedPanel.getBorder()).
             setTitleFont(dom);
+            
+            eYear2.setVisible(false);
+            eMonth2.setVisible(false);
+            eDay2.setVisible(false);
+            endDayLbl.setVisible(false);
+            startDayLbl.setVisible(false);
 	}
 
         public void reset() {
@@ -499,9 +581,6 @@ public class CalendarView{
                     reset();
                     if (controller != null)
                         controller.updateViews(curYear, curMonth, curDay);
-
-
-
 		}
             }
 	}
@@ -512,39 +591,43 @@ public class CalendarView{
                 int year = Integer.parseInt(eYear.getSelectedItem().toString());
                 int day = Integer.parseInt(eDay.getSelectedItem().toString());
                 int month = Arrays.asList(months).indexOf(String.valueOf(eMonth.getSelectedItem())) + 1;
-
-                int sTime = Integer.parseInt(cmbStart.getSelectedItem().toString().replace(":", ""));
-                int eTime = 0;
-                if (addMode.equalsIgnoreCase("event"))
-                    eTime = Integer.parseInt(cmbEnd.getSelectedItem().toString().replace(":", ""));
-                else {
-                    eTime = sTime + 30;
-                    if (eTime % 100 >= 60) {
-                        int min = eTime % 100;
-                        eTime = (eTime / 100) + 1;
-                        if (eTime > 23)
-                            eTime = 0;
-                        eTime *= 100;
-                        eTime += min % 60;
+                
+                int sTime = 0, eTime = 0;
+                    sTime = Integer.parseInt(cmbStart.getSelectedItem().toString().replace(":", ""));
+                    eTime = 0;
+                    if (addMode.equalsIgnoreCase("event"))
+                        eTime = Integer.parseInt(cmbEnd.getSelectedItem().toString().replace(":", ""));
+                    else {
+                        eTime = sTime + 30;
+                        if (eTime % 100 >= 60) {
+                            int min = eTime % 100;
+                            eTime = (eTime / 100) + 1;
+                            if (eTime > 23)
+                                eTime = 0;
+                            eTime *= 100;
+                            eTime += min % 60;
+                        }
                     }
-                }
+                    
+                    if (eTime == 0)
+                        eTime = 2400;
 
-                Event event = new Event(name,addMode,false,year,month,day,sTime,eTime);
-                if (!name.isEmpty() && sTime != eTime && sTime < eTime) {
-                    if (!overlap(event, controller.getEvents(year, month, day))) {
-                        errorLbl.setVisible(false);
-                        controller.addEvent(event);
-                        reset();
+                    Event event = new Event(name,addMode,false,year,month,day,sTime,eTime);
+                    if (!name.isEmpty() && sTime != eTime && sTime < eTime) {
+                        if (!overlap(event, controller.getEvents(year, month, day))) {
+                            errorLbl.setVisible(false);
+                            controller.addEvent(event);
+                            reset();
+                        }
+                        else {
+                            errorLbl.setText("<html>OVERLAPPING </br> EVENTS!</html>");
+                            errorLbl.setVisible(true);
+                        }
                     }
                     else {
-                        errorLbl.setText("<html>OVERLAPPING </br> EVENTS!</html>");
+                        errorLbl.setText("INVALID INPUT");
                         errorLbl.setVisible(true);
                     }
-                }
-                else {
-                    errorLbl.setText("INVALID INPUT");
-                    errorLbl.setVisible(true);
-                }
             }
 	}
 
@@ -577,29 +660,30 @@ public class CalendarView{
         class btnCreateEvent_Action implements ActionListener {
             @Override
             public void actionPerformed (ActionEvent e) {
-                eventPanel.setBorder(BorderFactory.createTitledBorder("Create Event"));
-                addMode = "event";
-                eventPanel.remove(eEnd);
-                eventPanel.add(eEnd);
-                eventPanel.remove(cmbEnd);
-                eventPanel.add(cmbEnd);
-                ((javax.swing.border.TitledBorder) eventPanel.getBorder()).
-                setTitleFont(dom);
-
-                reset();
-            }
-	}
-        class btnCreateTodo_Action implements ActionListener {
-            @Override
-            public void actionPerformed (ActionEvent e) {
-                eventPanel.remove(eEnd);
-                eventPanel.remove(cmbEnd);
-                eventPanel.setBorder(BorderFactory.createTitledBorder("Create To-do"));
-                addMode = "todo";
-
-                ((javax.swing.border.TitledBorder) eventPanel.getBorder()).
-                setTitleFont(dom);
-
+                if (addMode.equalsIgnoreCase("event"))
+                    addMode = "todo";
+                else
+                    addMode = "event";
+                
+                if (addMode.equalsIgnoreCase("event")) {
+                    eventPanel.setBorder(BorderFactory.createTitledBorder("Create Event"));
+                    addMode = "event";
+                    eventPanel.remove(eEnd);
+                    eventPanel.add(eEnd);
+                    eventPanel.remove(cmbEnd);
+                    eventPanel.add(cmbEnd);
+                    
+                    ((javax.swing.border.TitledBorder) eventPanel.getBorder()).setTitleFont(dom);
+                }
+                else {
+                    eventPanel.remove(eEnd);
+                    eventPanel.remove(cmbEnd);
+                    eventPanel.setBorder(BorderFactory.createTitledBorder("Create To-do"));
+                    addMode = "todo";
+                
+                    ((javax.swing.border.TitledBorder) eventPanel.getBorder()).setTitleFont(dom);
+                }
+                
                 reset();
             }
 	}
@@ -607,10 +691,10 @@ public class CalendarView{
             @Override
             public void actionPerformed (ActionEvent e) {
                 if (btnViewEvent.getName().equals(((Component)e.getSource()).getName())) {
-                    viewMode = "event";
-                }
-                else if (btnViewTodo.getName().equals(((Component)e.getSource()).getName())) {
-                    viewMode = "todo";
+                    if (viewMode.equalsIgnoreCase("event"))
+                        viewMode = "todo";
+                    else
+                        viewMode = "event";
                 }
                 else if (btnViewAgenda.getName().equals(((Component)e.getSource()).getName())) {
                     viewMode = "agenda";
@@ -618,33 +702,149 @@ public class CalendarView{
                 controller.updateViews(curYear, curMonth, curDay);
             }
 	}
+        class btnToday_Action implements ActionListener {
+            @Override
+            public void actionPerformed (ActionEvent e) {
+                curDay = dayBound;
+                curMonth = monthBound + 1;
+                curYear = yearBound;
+                controller.updateViews(curYear, curMonth, curDay);
+                
+                eDay.setSelectedItem(""+curDay);
+                eMonth.setSelectedIndex(curMonth - 1);
+                eYear.setSelectedItem(""+curYear);
+                
+                eDay2.setSelectedItem(""+curDay);
+                eMonth2.setSelectedIndex(curMonth - 1);
+                eYear2.setSelectedItem(""+curYear);
+                
+                agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda for Today"));
+                ((javax.swing.border.TitledBorder) agendaPanel.getBorder()).setTitleFont(dom);
+                schedPanel.setBorder(BorderFactory.createTitledBorder("Schedule for Today"));
+                ((javax.swing.border.TitledBorder) schedPanel.getBorder()).setTitleFont(dom);
+            }
+	}
+        class btnCount_Action implements ActionListener {
+            @Override
+            public void actionPerformed (ActionEvent e) {
+                List<Event> eventsList = controller.getAllEvents();
+                
+                int totalCtr = 0, todayCtr = 0, totalDone = 0, todayDone = 0;
+                for (Event event : eventsList) {
+                    if (event.getType().equalsIgnoreCase("todo")) {
+                        if (event.getYear() == curYear && event.getMonth() == curMonth && event.getDay() == curDay) {
+                            if (event.isDone()) {
+                                totalDone++;
+                                todayDone++;
+                            }
+                            todayCtr++;
+                        }
+                        else if (event.isDone())
+                            totalDone++;
+                        totalCtr++;
+                    }
+                }
+                
+                String total = totalDone + "/" + totalCtr;
+                String today = todayDone + "/" + todayCtr;
+                String msg = "You have " + total + " to do item/s finished in total. ";
+                msg += "For today, you have " + today + " item/s out of the way. ";
+                
+                if (todayDone == 0)
+                    msg += "Let's go and get some work done!";
+                else if (todayDone == todayCtr)
+                    msg += "You're all done for the day! Good job!";
+                else if (todayDone < todayCtr * .30)
+                    msg += "You have quite some way to go, keep working at it!";
+                else if (todayDone < todayCtr * .70)
+                    msg += "You've made good progress, keep it up!";
+                else if (todayDone < todayCtr * .80 || todayDone > todayCtr * .80)
+                    msg += "Just a few stuff left to do, one last push!";
+                
+                    
+                JOptionPane.showMessageDialog(frmMain, msg);
+            }
+	}
+        class btnColor_Action implements ActionListener {
+            @Override
+            public void actionPerformed (ActionEvent e) {
+                eventColor = JColorChooser.showDialog(
+                     frmMain,
+                     "Choose Event Color",
+                     frmMain.getBackground());
+                todoColor = JColorChooser.showDialog(
+                     frmMain,
+                     "Choose Todo Color",
+                     frmMain.getBackground());
+                sv.refresh(eventColor, todoColor);
+                av.refresh(eventColor, todoColor);
+                av.expireEvents();
+                if (wv != null)
+                    wv.refresh(eventColor, todoColor);
+            }
+	}
+        class btnWeek_Action implements ActionListener {
+            @Override
+            public void actionPerformed (ActionEvent e) {
+                wv = new WeeklyView(controller, getWeekInfo());
+                wv.refresh(eventColor, todoColor);
+            }
+	}
+        public List<String[]> getWeekInfo () {
+            GregorianCalendar cal = new GregorianCalendar(curYear, curMonth-1, curDay);
+            int weekOfYear = cal.get(Calendar.WEEK_OF_YEAR);
+            cal.set(Calendar.WEEK_OF_YEAR, weekOfYear);  
+            SimpleDateFormat sdf = new SimpleDateFormat("MM dd yyyy");
+            
+            List<String[]> weekInfo;
+                weekInfo = new ArrayList<String[]>();
+                
+                cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+                weekInfo.add(sdf.format(cal.getTime()).split(" "));
+                
+                cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+                weekInfo.add(sdf.format(cal.getTime()).split(" "));
+                
+                cal.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
+                weekInfo.add(sdf.format(cal.getTime()).split(" "));
+                
+                cal.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+                weekInfo.add(sdf.format(cal.getTime()).split(" "));
+                
+                cal.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+                weekInfo.add(sdf.format(cal.getTime()).split(" "));
+                
+                cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+                weekInfo.add(sdf.format(cal.getTime()).split(" "));
+                
+                cal.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+                weekInfo.add(sdf.format(cal.getTime()).split(" "));
+                
+                return weekInfo;
+        }
         class calListener extends MouseAdapter {
             @Override
             public void mouseClicked(MouseEvent evt) {
-                    curCol = calendarTable.getSelectedColumn();
-                    curRow = calendarTable.getSelectedRow();
+                curCol = calendarTable.getSelectedColumn();
+                curRow = calendarTable.getSelectedRow();
 
-                    String val = calendarTable.getValueAt(calendarTable.getSelectedRow(), calendarTable.getSelectedColumn()).toString();
-                    val = val.replaceAll("\\D+","");
-                    eDay.setSelectedItem(val);
-                    eMonth.setSelectedIndex(curMonth - 1);
-                    curDay = Integer.valueOf(val.trim());
-                    eYear.setSelectedItem(""+curYear);
+                String val = calendarTable.getValueAt(calendarTable.getSelectedRow(), calendarTable.getSelectedColumn()).toString();
+                val = val.replaceAll("\\D+","");
+                eDay.setSelectedItem(val);
+                eMonth.setSelectedIndex(curMonth - 1);
+                curDay = Integer.valueOf(val.trim());
+                eYear.setSelectedItem(""+curYear);
+                    
+                eDay2.setSelectedItem(val);
+                eMonth2.setSelectedIndex(curMonth - 1);
+                eYear2.setSelectedItem(""+curYear);
+                    
+                controller.updateViews(curYear, curMonth, curDay);
 
-                    System.out.println("SELECT * " + " FROM " + Event.TABLE + " WHERE " +
-                        Event.COL_YEAR + " = " + curYear + " AND " +
-                        Event.COL_MONTH + " = " + curMonth + " AND " +
-                        Event.COL_DAY + " = " + curDay);
-                    controller.updateViews(curYear, curMonth, curDay);
-
-
-                    agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda for " + curMonth + "/" + curDay + "/" + curYear));
-                    ((javax.swing.border.TitledBorder) agendaPanel.getBorder()).
-                    setTitleFont(dom);
-                    schedPanel.setBorder(BorderFactory.createTitledBorder("Schedule for " + curMonth + "/" + curDay + "/" + curYear));
-                    ((javax.swing.border.TitledBorder) schedPanel.getBorder()).
-                    setTitleFont(dom);
-
+                agendaPanel.setBorder(BorderFactory.createTitledBorder("Agenda for " + curMonth + "/" + curDay + "/" + curYear));
+                ((javax.swing.border.TitledBorder) agendaPanel.getBorder()).setTitleFont(dom);
+                schedPanel.setBorder(BorderFactory.createTitledBorder("Schedule for " + curMonth + "/" + curDay + "/" + curYear));
+                ((javax.swing.border.TitledBorder) schedPanel.getBorder()).setTitleFont(dom);
             }
         }
 }

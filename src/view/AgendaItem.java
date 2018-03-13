@@ -18,6 +18,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -65,9 +67,7 @@ public class AgendaItem extends JPanel {
         } catch(IOException e) {
             System.out.println("FILE NOT FOUND");
         }
-       
-        
-        
+     
         eName.setPreferredSize(new Dimension(200,40));
         deleteBtn.setPreferredSize(new Dimension(30,30));
         eTime.setPreferredSize(new Dimension(90,40));
@@ -114,7 +114,11 @@ public class AgendaItem extends JPanel {
         }
         else 
             eName.setText(event.getName());
-        eTime.setText(startTime+"-"+endTime);
+        
+        String endLbl = String.valueOf(endTime);
+        if (endLbl.equals("2400"))
+            endLbl = "0000";
+        eTime.setText(startTime+"-"+endLbl);
     }
     public static final AgendaItem createEmpty() {
 	AgendaItem item = new AgendaItem();
@@ -145,6 +149,37 @@ public class AgendaItem extends JPanel {
         @Override
         public void actionPerformed (ActionEvent e) {
             controller.deleteEvent(event);
+        }
+    }
+    public void refresh(Color c1, Color c2) {
+        if (event != null) {
+            if (event.getType().equalsIgnoreCase("event"))
+                this.setBackground(c1);
+            else 
+                this.setBackground(c2);
+        }
+    }
+    
+    public void expireEvents() {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("MM dd yyyy");
+            
+        int curTime = Integer.valueOf(sdf.format(new Date()).replace(":", ""));
+            
+        int curYear = Integer.valueOf(sdf2.format(new Date()).split(" ")[2]);
+        int curMonth = Integer.valueOf(sdf2.format(new Date()).split(" ")[0]);
+        int curDay = Integer.valueOf(sdf2.format(new Date()).split(" ")[1]);
+        
+        // EVENT EXPIRES
+        if (event != null) {
+        if (event.getType().equalsIgnoreCase("event")) {
+            if (event.getYear() < curYear && event.getMonth() < curMonth)
+                setBackground(Color.gray);
+            else if (event.getYear() == curYear && event.getMonth() == curMonth && event.getDay() < curDay)
+                setBackground(Color.gray);
+            else if (event.getYear() == curYear && event.getMonth() == curMonth && event.getDay() == curDay && event.getEndTime() < curTime)
+                setBackground(Color.gray);
+        }
         }
     }
 }
